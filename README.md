@@ -1,7 +1,7 @@
 Technical Indicators
 ===================
 
-###Technical indicator and overlay scripts for use in [www.cloud9trader.com](https://www.cloud9trader.com) charts and trading algorithms.
+#####Technical indicator and overlay scripts for use in [www.cloud9trader.com](https://www.cloud9trader.com) charts and trading algorithms.
 
 
 
@@ -17,7 +17,7 @@ If you spot any issues with them or would like to add your own indicator to Clou
 
 
 
-The indicators will contain at minimum an 'onIntervalClose' function and some or all of the following:
+**The indicators will contain at minimum an 'onIntervalClose' function and some or all of the following:**
 
 * `onIntervalClose()` Required. Called every bar close. Its job is to return the current indicator value(s) (and any chart config).
 
@@ -37,7 +37,7 @@ For the API for using these in your trading algorithms see [Algorithms API Refer
 
 
 
-These are the indicators you'll find in this repository:
+**These are the indicators you'll find in this repository:**
 
 * Accumulation Distribution Line `adl()`
 * Aroon `aroon(periods)`
