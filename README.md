@@ -4,7 +4,6 @@ Technical Indicators
 #####Technical indicator and overlay scripts for use in [www.cloud9trader.com](https://www.cloud9trader.com) charts and trading algorithms.
 
 
-
 These indicator scripts, written in JavaScript, power the built in technical indicators on the platform.
 
 Their job is to derive a value, or set of values, from price data at any given moment in time to be drawn onto charts as one or several overlays or studies. They can also be used inside your Cloud9Trader trading scripts.
@@ -16,10 +15,11 @@ They're also here for those who are just interested in the maths behind technica
 If you spot any issues with them or would like to add your own indicator to Cloud9Trader's built in collection, we'd be very grateful for your pull requests.
 
 
+###Functions
 
-**The indicators will contain at minimum an 'onIntervalClose' function and some or all of the following:**
+The indicators will contain at minimum an 'onIntervalClose' function and some or all of the following:
 
-* `onIntervalClose()` Required. Called every bar close. Its job is to return the current indicator value(s) (and any chart config).
+* `onIntervalClose()` Required. Called every bar close. Its job is to return the current indicator value(s) (and any chart config), so is generally where you'll find most of the logic.
 
 * `onStart()` Optional. Called once run up price data has loaded with any user input parameters. Used to validate these and initialize any variables that are globally scoped (i.e. persist between updates)
 
@@ -28,6 +28,7 @@ If you spot any issues with them or would like to add your own indicator to Clou
 * `getStudyAxisConfig` Optional. Configures the study chart axis for indicators that produce one.
 
 
+###Documentation
 
 You can find plenty of info for writing your own indicators in the Cloud9Trader documentation pages. See [Writing Your Technical Indicators](https://www.cloud9trader.com/documentation/writing-your-technical-indicators).
 
@@ -37,7 +38,7 @@ For the API for using these in your trading algorithms see [Algorithms API Refer
 
 
 
-**These are the indicators you'll find in this repository:**
+###Indicators
 
 * Accumulation Distribution Line `adl()`
 * Aroon `aroon(periods)`
