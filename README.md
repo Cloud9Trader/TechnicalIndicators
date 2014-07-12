@@ -25,7 +25,7 @@ The indicators will contain at minimum an 'onIntervalClose' function and some or
 
 * `getRunUpCount()` Optional. Tells the system how many intervals of previous price data to load in that are needed to produce the first value. This is often the n `periods` of the indicator. This is also called with any user input parameters.
 
-* `getStudyAxisConfig` Optional. Configures the study chart axis for indicators that produce one.
+* `getStudyAxisConfig()` Optional. Configures the study chart axis for indicators that produce one.
 
 
 ###Documentation
