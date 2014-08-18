@@ -1,40 +1,29 @@
-var values = [];
-var fastExponent;
-var slowExponent;
-var signalExponent;
-var fastEMA;
-var slowEMA;
-var pvoValues = [];
-var pvoEMA;
-var label;
-var signalLabel;
-var histogramLabel;
+var signalExponent,
+    pvoValues = [],
+    pvoEMA,
+    label,
+    signalLabel,
+    histogramLabel;
 
-function onStart (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+function getRunUpCount (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+    return (slowEMAPeriods * 2) + (signalEMAPeriods || 0);
+}
+
+function validate (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     
-    validate("fastEMAPeriods", fastEMAPeriods);
-    validate("slowEMAPeriods", slowEMAPeriods);
+    validateField("fastEMAPeriods", fastEMAPeriods);
+    validateField("slowEMAPeriods", slowEMAPeriods);
     
     if (fastEMAPeriods >= slowEMAPeriods) {
         error("Price Volume Oscillator slowEMAPeriods must be greater than fastEMAPeriods");
     }
-        
-    fastExponent = 2 / (fastEMAPeriods + 1);
-    slowExponent = 2 / (slowEMAPeriods + 1);
 
     if (signalEMAPeriods) {
-
-        validate("signalEMAPeriods", signalEMAPeriods);
-
-        label = "Price Volume Oscillator (" + fastEMAPeriods + "," + slowEMAPeriods + "," + signalEMAPeriods + ")";
-        signalLabel = label + " Signal";
-        histogramLabel = label + " Histogram";
-
-        signalExponent = 2 / (signalEMAPeriods + 1);
+        validateField("signalEMAPeriods", signalEMAPeriods);
     }
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Price Volume Oscillator " + fieldName + " must be a number");
     }
@@ -49,27 +38,22 @@ function validate (fieldName, value) {
     }
 }
 
-function getRunUpCount (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
-    return slowEMAPeriods + signalEMAPeriods;
+function onStart (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+    if (signalEMAPeriods) {
+        label = "Price Volume Oscillator (" + fastEMAPeriods + "," + slowEMAPeriods + "," + signalEMAPeriods + ")";
+        signalLabel = label + " Signal";
+        histogramLabel = label + " Histogram";
+        signalExponent = 2 / (signalEMAPeriods + 1);
+    }
 }
 
 function onIntervalClose (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     
-    var pvo;
+    var fastEMA = ema(fastEMAPeriods),
+        slowEMA = ema(slowEMAPeriods),
+        pvo;
 
-    if (slowEMA !== undefined) {
-
-        slowEMA =  ((VOLUME - slowEMA) * slowExponent) + slowEMA;
-        fastEMA =  ((VOLUME - fastEMA) * fastExponent) + fastEMA;
-        
-    } else if (values.length === slowEMAPeriods) {
-        
-        slowEMA = Math.average(values);
-        fastEMA = Math.average(values.slice(values.length - fastEMAPeriods));
-        
-    } else {
-
-        values.push(VOLUME);
+    if (!fastEMA || !slowEMA) {
         return null;
     }
     
@@ -83,15 +67,10 @@ function onIntervalClose (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     }
     
     if (pvoEMA !== undefined) {
-        
         pvoEMA = ((pvo - pvoEMA) * signalExponent) + pvoEMA;
-        
     } else if (pvoValues.length === signalEMAPeriods) {
-        
         pvoEMA = Math.average(pvoValues);
-        
     } else {
-        
         pvoValues.push(pvo);
         return null;
     }

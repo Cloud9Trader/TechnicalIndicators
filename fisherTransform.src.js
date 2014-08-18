@@ -2,7 +2,7 @@ var smoothingExponent,
     fisherExponent,
     label,
     signalLabel,
-    prices = [],
+    midpoints = [],
     raws = [],
     smoothed,
     logarithm,
@@ -10,15 +10,11 @@ var smoothingExponent,
     fisher,
     lastFisher;
 
-// TODO Should smoothing periods be available as user setting?
+// TODO Could parameterize smoothing periods
 var smoothingPeriods = 5;
 var fisherPeriods = 3;
 
-function getRunUpCount (periods) {
-    return periods + smoothingPeriods + fisherPeriods + 1;
-}
-
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Fisher Transform periods must be a number");
     }
@@ -31,30 +27,41 @@ function onStart (periods) {
     if (periods <= 0) {
         error("Fisher Transform periods must be greater than 0");
     }
+}
+
+function getRunUpCount (periods) {
+    return periods + smoothingPeriods + fisherPeriods + 1;
+}
+
+function getBufferSize () {
+    return 0;
+}
+
+function onStart (periods) {
     smoothingExponent = 2 / (smoothingPeriods + 1);
     fisherExponent = 2 / (fisherPeriods + 1);
-    label = "fisherTransform(" + periods + ")";
-    signalLabel = label + "Signal";
+    label = "Fisher Transform (" + periods + ")";
+    signalLabel = label + " Signal";
 }
 
 function onIntervalClose (periods) {
 
-    var price = (HIGH + LOW) / 2,
+    var midpoint = (HIGH + LOW) / 2,
         periodLow,
         raw,
         output;
 
-    prices.push(price);
+    midpoints.push(midpoint);
 
-    if (prices.length < periods) {
+    if (midpoints.length < periods) {
         return null;
-    } else if (prices.length > periods) {
-        prices.shift();
+    } else if (midpoints.length > periods) {
+        midpoints.shift();
     }
 
-    periodLow = Math.min.apply(null, prices);
+    periodLow = Math.min.apply(null, midpoints);
 
-    raw = 2 * ((price - periodLow) / (Math.max.apply(null, prices) - periodLow)) - 1;
+    raw = 2 * ((midpoint - periodLow) / (Math.max.apply(null, midpoints) - periodLow)) - 1;
 
     if (smoothed === undefined) {
         raws.push(raw);

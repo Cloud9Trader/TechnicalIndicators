@@ -1,11 +1,10 @@
-var values = [],
-    SMASeriesName;
+var SMASeriesName;
 
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods, deviations) {
+function validate (periods, deviations) {
     if (typeof periods !== "number") {
         error("Bollinger Bands periods must be a number");
     }
@@ -24,28 +23,17 @@ function onStart (periods, deviations) {
     if (typeof deviations <= 0) {
         error("Bollinger Bands deviation multiplier must be greater than zero");
     }
+}
+
+function onStart (periods, deviations) {
     SMASeriesName = "bollinger(" + periods + "," + deviations + ") mid";
 }
 
 function onIntervalClose (periods, deviations) {
     var SMA,
         margin,
-        closePrices;
+        closePrices = prices(periods);
 
-    // Push closing mid price to end of values array
-    values.push(CLOSE);
-
-    // We haven't got enough run up data to produce a value, so return null
-    if (values.length < periods) {
-        return null;
-    }
-
-    // Re-indexing array is slow, so rather than splicing dropped value from the beginning each time we just splice out old data every so often
-    if (values.length > periods * 5) {
-        values.splice(0, values.length - periods);
-    }
-
-    closePrices = values.slice(values.length - periods);
     SMA = Math.mean(closePrices);
     margin = Math.standardDeviation(closePrices) * deviations;
     

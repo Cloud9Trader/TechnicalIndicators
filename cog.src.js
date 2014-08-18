@@ -5,10 +5,14 @@ var signalLabel,
     cogs = [];
 
 function getRunUpCount (periods, signalPeriods) {
-    return periods, signalPeriods;
+    return signalPeriods || 0;
 }
 
-function onStart (periods, signalPeriods) {
+function getBufferSize (periods) {
+    return periods;
+}
+
+function validate (periods, signalPeriods) {
     if (typeof periods !== "number") {
         error("Center of Gravity Oscillator periods must be a number");
     }
@@ -36,6 +40,9 @@ function onStart (periods, signalPeriods) {
     if (signalPeriods < 0) {
         error("Center of Gravity Oscillator signalPeriods must be greater than or equal to zero");
     }
+}
+
+function onStart (periods, signalPeriods) {
     signalLabel = "cog(" + periods + "," + signalPeriods + ") Signal";
     signalExponent = 2 / (signalPeriods + 1);
 }
@@ -46,16 +53,8 @@ function onIntervalClose (periods, signalPeriods) {
         denominator = 0,
         cog;
 
-    // NOTE Some sources use (HIGH + LOW) / 2 rather than CLOSE price.
-    closes.push(CLOSE);
-
-    if (closes.length < periods) {
-        return null;
-    } else if (closes.length > periods) {
-        closes.shift();
-    }
-
-    closes.forEach(function (close, index) {
+    // NOTE Some sources suggest (HIGH + LOW) / 2 rather than CLOSE price.
+    prices(periods).forEach(function (close, index) {
         nominator += close * (periods - index + 1);
         denominator += close;
     });

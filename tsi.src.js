@@ -3,7 +3,6 @@ var firstExponent,
     signalExponent,
     label,
     signalLabel,
-    previousClose,
     priceChanges = [],
     absolutePriceChanges = [],
     firstEMA,
@@ -15,22 +14,33 @@ var firstExponent,
     TSIs = [],
     signal;
 
-function onStart (firstPeriods, secondPeriods, signalPeriods) {
-    validate("firstPeriods", firstPeriods);
-    validate("secondPeriods", secondPeriods);
+function getRunUpCount (firstPeriods, secondPeriods, signalPeriods) {
+    return (firstPeriods + secondPeriods + (signalPeriods || 0)) * 2;
+}
 
+function getBufferSize (firstPeriods, secondPeriods, signalPeriods) {
+    return 1;
+}
+
+function validate (firstPeriods, secondPeriods, signalPeriods) {
+    validateField("firstPeriods", firstPeriods);
+    validateField("secondPeriods", secondPeriods);
+    if (signalPeriods) {
+        validateField("signalPeriods", signalPeriods);
+    }
+}
+
+function onStart (firstPeriods, secondPeriods, signalPeriods) {
     firstExponent = 2 / (firstPeriods + 1);
     secondExponent = 2 / (secondPeriods + 1);
     signalExponent = 2 / (signalPeriods + 1);
-
     if (signalPeriods) {
-        validate("signalPeriods", signalPeriods);
         label = "tsi(" + firstPeriods + "," + secondPeriods + "," + signalPeriods + ")";
         signalLabel = label + " Signal";
     }
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("True Strength Index " + fieldName + " must be a number");
     }
@@ -47,19 +57,9 @@ function validate (fieldName, value) {
 
 function onIntervalClose (firstPeriods, secondPeriods, signalPeriods) {
 
-    var priceChange,
-        absolutePriceChange,
+    var priceChange = CLOSE - price(1),
+        absolutePriceChange = Math.abs(priceChange),
         TSI;
-
-    if (previousClose === undefined) {
-        previousClose = CLOSE;
-        return null;
-    }
-
-    priceChange = CLOSE - previousClose;
-    previousClose = CLOSE;
-    
-    absolutePriceChange = Math.abs(priceChange);
 
     if (firstEMA === undefined) {
         priceChanges.push(priceChange);
@@ -89,7 +89,7 @@ function onIntervalClose (firstPeriods, secondPeriods, signalPeriods) {
         secondAbsoluteEMA = ((firstAbsoluteEMA - secondAbsoluteEMA) * secondExponent) + secondAbsoluteEMA;
     }
 
-    TSI = 100 * (secondEMA / secondAbsoluteEMA);
+    TSI = (secondEMA / secondAbsoluteEMA) * 100;
 
     if (!signalPeriods) {
         return {

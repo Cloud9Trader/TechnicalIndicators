@@ -1,17 +1,4 @@
-var closes = [];
-
-function getRunUpCount (periods) {
-    return periods;
-}
-
-function getStudyAxisConfig () {
-    return {
-        min: 0,
-        max: 100
-    };
-}
-
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Aroon periods must be a number");
     }
@@ -26,6 +13,17 @@ function onStart (periods) {
     }
 }
 
+function getBufferSize (periods) {
+    return periods;
+}
+
+function getStudyAxisConfig () {
+    return {
+        min: 0,
+        max: 100
+    };
+}
+
 function onIntervalClose (periods) {
 
     var highestHigh,
@@ -33,22 +31,14 @@ function onIntervalClose (periods) {
         highIndex,
         lowIndex;
 
-    closes.push(CLOSE);
-
-    if (closes.length < periods) {
-        return null;
-    } else if (closes.length > periods) {
-        closes.shift();
-    }
-
-    closes.forEach(function (closePrice, index) {
-        if (!highestHigh || closePrice > highestHigh) {
-            highestHigh = closePrice;
-            highIndex = index;
+    prices(periods).forEach(function (close, index) {
+        if (!highestHigh || close > highestHigh) {
+            highestHigh = close;
+            highIndex = periods - index - 1;
         }
-        if (!lowestLow || closePrice < lowestLow) {
-            lowestLow = closePrice;
-            lowIndex = index;
+        if (!lowestLow || close < lowestLow) {
+            lowestLow = close;
+            lowIndex = periods - index - 1;
         }
     });
 

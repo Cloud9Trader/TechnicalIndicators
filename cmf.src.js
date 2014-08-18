@@ -1,11 +1,15 @@
-var moneyFlowMultipliers = [];
-var moneyFlowVolumes = [];
+var moneyFlowMultipliers = [],
+    moneyFlowVolumes = [];
 
-function getRunUpCount () {
+function getRunUpCount (periods) {
+    return periods;
+}
+
+function getBufferSize () {
     return 0;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Chaikin Money Flow periods must be a number");
     }

@@ -2,7 +2,7 @@ var previousClose,
     trueRangeValues = [],
     averageTrueRange;
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Average True Range periods must be a number");
     }
@@ -17,6 +17,14 @@ function onStart (periods) {
     }
 }
 
+function getRunUpCount (periods) {
+    return periods * 2;
+}
+
+function getBufferSize (periods) {
+    return 0;
+}
+
 function onIntervalClose (periods) {
 
     var trueRange;
@@ -26,11 +34,11 @@ function onIntervalClose (periods) {
         return null;
     }
     
-    trueRange = Math.max.apply(null, [
+    trueRange = Math.max(
         HIGH - LOW,
         Math.abs(HIGH - previousClose),
         Math.abs(LOW - previousClose)
-    ]);
+    );
 
     previousClose = CLOSE;
 

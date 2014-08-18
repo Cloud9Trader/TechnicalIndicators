@@ -1,7 +1,6 @@
 // Accumulation Distribution Line
 
-
-function getRunUpCount () {
+function getBufferSize () {
     return 0;
 }
 

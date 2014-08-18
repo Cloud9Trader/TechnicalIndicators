@@ -8,22 +8,22 @@ var maxROCPeriods,
     KSTs = [];
 
 function getRunUpCount (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods, firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods, signalSMA) {
-
-    maxROCPeriods = Math.max(firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods);
-    maxSMAPeriods = Math.max(firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods);
-
-    return maxROCPeriods + maxSMAPeriods + (signalSMA || 0);
+    return Math.max(firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods) + (signalSMA || 0);
 }
 
-function onStart (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods, firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods, signalSMA) {
-    validate("firstROCPeriods", firstROCPeriods);
-    validate("secondROCPeriods", secondROCPeriods);
-    validate("thirdROCPeriods", thirdROCPeriods);
-    validate("fourthROCPeriods", fourthROCPeriods);
-    validate("firstROCPeriods", firstROCPeriods);
-    validate("secondROCPeriods", secondROCPeriods);
-    validate("thirdROCPeriods", thirdROCPeriods);
-    validate("fourthROCPeriods", fourthROCPeriods);
+function getBufferSizee (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods, firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods, signalSMA) {
+    return Math.max(firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods);
+}
+
+function validate (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods, firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods, signalSMA) {
+    validateField("firstROCPeriods", firstROCPeriods);
+    validateField("secondROCPeriods", secondROCPeriods);
+    validateField("thirdROCPeriods", thirdROCPeriods);
+    validateField("fourthROCPeriods", fourthROCPeriods);
+    validateField("firstROCPeriods", firstROCPeriods);
+    validateField("secondROCPeriods", secondROCPeriods);
+    validateField("thirdROCPeriods", thirdROCPeriods);
+    validateField("fourthROCPeriods", fourthROCPeriods);
 
     if (firstROCPeriods >= secondROCPeriods) {
         error("Know Sure Thing secondROCPeriods must be greater than firstROCPeriods");
@@ -48,7 +48,7 @@ function onStart (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCP
     }
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Know Sure Thing " + fieldName + " must be a number");
     }
@@ -65,8 +65,7 @@ function validate (fieldName, value) {
 
 function onIntervalClose (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fourthROCPeriods, firstSMAPeriods, secondSMAPeriods, thirdSMAPeriods, fourthSMAPeriods, signalSMA) {
 
-    var length = closes.length,
-        firstPeriodClose,
+    var firstPeriodClose,
         secondPeriodClose,
         thirdPeriodClose,
         fourthPeriodClose,
@@ -76,13 +75,7 @@ function onIntervalClose (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fo
         RCMA4,
         KST;
 
-    closes.push(CLOSE);
-
-    if (length < maxROCPeriods) {
-        return null;
-    }
-
-    firstPeriodClose = closes[length - firstROCPeriods];
+    firstPeriodClose = price(firstROCPeriods);
     firstROCs.push(((CLOSE - firstPeriodClose) / firstPeriodClose) * 100);
     if (firstROCs.length > firstSMAPeriods) {
         firstROCs.shift();
@@ -91,7 +84,7 @@ function onIntervalClose (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fo
         RCMA1 = Math.average(firstROCs);
     }
 
-    secondPeriodClose = closes[length - secondROCPeriods];
+    secondPeriodClose = price(secondROCPeriods);
     secondROCs.push(((CLOSE - secondPeriodClose) / secondPeriodClose) * 100);
     if (secondROCs.length > secondSMAPeriods) {
         secondROCs.shift();
@@ -100,7 +93,7 @@ function onIntervalClose (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fo
         RCMA2 = Math.average(secondROCs);
     }
 
-    thirdPeriodClose = closes[length - thirdROCPeriods];
+    thirdPeriodClose = price(thirdROCPeriods);
     thirdROCs.push(((CLOSE - thirdPeriodClose) / thirdPeriodClose) * 100);
     if (thirdROCs.length > thirdSMAPeriods) {
         thirdROCs.shift();
@@ -109,18 +102,13 @@ function onIntervalClose (firstROCPeriods, secondROCPeriods, thirdROCPeriods, fo
         RCMA3 = Math.average(thirdROCs);
     }
 
-    fourthPeriodClose = closes[length - fourthROCPeriods];
+    fourthPeriodClose = price(fourthROCPeriods);
     fourthROCs.push(((CLOSE - fourthPeriodClose) / fourthPeriodClose) * 100);
     if (fourthROCs.length > fourthSMAPeriods) {
         fourthROCs.shift();
     }
     if (fourthROCs.length === fourthSMAPeriods) {
         RCMA4 = Math.average(fourthROCs);
-    }
-
-    // Splice occasionally
-    if (length > maxROCPeriods * 3) {
-        closes.splice(0, length - maxROCPeriods);
     }
 
     if (RCMA1 === undefined || RCMA2 === undefined || RCMA3 === undefined || RCMA4 === undefined) {

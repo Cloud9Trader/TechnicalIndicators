@@ -4,6 +4,10 @@ function getRunUpCount (periods) {
     return periods;
 }
 
+function getBufferSize (periods) {
+    return 0;
+}
+
 function onStart (periods) {
     if (typeof periods !== "number") {
         error("QStick periods must be a number");
@@ -21,11 +25,11 @@ function onStart (periods) {
 
 function onIntervalClose (periods) {
 
-    changes.push(CLOSE - OPEN);
+    changes.push((CLOSE - OPEN) / INSTRUMENT.PIP_SIZE);
 
     if (changes.length < periods) {
         return null;
-    } else {
+    } else if (changes.length > periods) {
         changes.shift();
     }
 

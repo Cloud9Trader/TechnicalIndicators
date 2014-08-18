@@ -1,10 +1,8 @@
-var closes = [];
-
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Standard Deviation (Volatility) periods must be a number");
     }
@@ -20,17 +18,8 @@ function onStart (periods) {
 }
 
 function onIntervalClose (periods) {
-
-    closes.push(CLOSE);
-
-    if (closes.length < periods) {
-        return null;
-    } else if (closes.length > periods) {
-        closes.shift();
-    }
-
     return {
         overlay: false,
-        value: Math.standardDeviation(closes)
+        value: Math.standardDeviation(prices(periods)) / INSTRUMENT.PIP_SIZE
     };
 }

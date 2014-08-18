@@ -1,13 +1,16 @@
 var emaExponent,
-    lastClose,
     forceIndices = [],
     forceIndexEMA;
+
+function getBufferSize (periods) {
+    return 1;
+}
 
 function getRunUpCount (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Force Index periods must be a number");
     }
@@ -20,20 +23,15 @@ function onStart (periods) {
     if (periods <= 0) {
         error("Force Index periods must be greater than zero");
     }
+}
+
+function onStart (periods) {
     emaExponent = 2 / (periods + 1);
 }
 
 function onIntervalClose (periods) {
-    
-    var forceIndex;
-    
-    if (lastClose === undefined) {
-        lastClose = CLOSE;
-        return null;
-    }
-    
-    forceIndex = (CLOSE - lastClose) * VOLUME;
-    lastClose = CLOSE;
+
+    var forceIndex = (CLOSE - price(1)) * VOLUME;
 
     if (forceIndexEMA === undefined) {
         forceIndices.push(forceIndex);

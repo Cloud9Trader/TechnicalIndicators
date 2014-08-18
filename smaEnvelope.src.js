@@ -1,8 +1,6 @@
-var values = [];
-var cacheSum = null;
 var smaLabel;
 
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
@@ -28,29 +26,16 @@ function onStart (periods, envelope) {
     if (envelope > 100) {
         error("SMA Envelope envelope percent must be below 100");
     }
+}
+
+function onStart (periods, envelope) {
     smaLabel = "sma(" + periods + ")";
 }
 
-
 function onIntervalClose (periods, envelope) {
-    var mid = (BID + ASK) / 2,
-        sma;
-
-    // Push closing mid price to end of values array
-    values.push(mid);
-
-    // We haven't got enough run up data to produce a value, so return null
-    if (values.length < periods) {
-        return null;
-    }
-
-    // Re-indexing array is slow, so rather than splicing dropped value from the beginning each time we just splice out old data every so often
-    if (values.length > periods * 10) {
-        values.splice(0, values.length - periods);
-    }
     
-    sma = Math.average(values.slice(values.length - periods, values.length));
-    envelope = sma * (envelope / 100);
+    var sma = Math.average(prices(periods)),
+        envelope = sma * (envelope / 100);
     
     return [
         [sma - envelope, sma + envelope],

@@ -1,13 +1,15 @@
-var values = [],
-    emaExponent,
-    lastEMA,
-    previousClose,
-    trueRangeValues = [],
-    previousAverageTrueRange,
-    label,
+var label,
     emaLabel;
 
-function onStart (emaPeriods, atrPeriods, atrMultiplier) {
+function getRunUpCount (emaPeriods, atrPeriods, atrMultiplier) {
+    return Math.max(emaPeriods, atrPeriods) * 2;
+}
+
+function getBufferSize (emaPeriods, atrPeriods, atrMultiplier) {
+    return 1;
+}
+
+function validate (emaPeriods, atrPeriods, atrMultiplier) {
     if (typeof emaPeriods !== "number") {
         error("Keltner Channels EMA periods must be a number");
     }
@@ -38,63 +40,18 @@ function onStart (emaPeriods, atrPeriods, atrMultiplier) {
     if (atrMultiplier <= 0) {
         error("Keltner Channels Average True Range multiplier must be greater than zero");
     }
-    emaExponent = 2 / (emaPeriods + 1);
+}
+
+function onStart (emaPeriods, atrPeriods, atrMultiplier) {
     label = "Keltner Channels (" + emaPeriods + "," + atrPeriods + "," + atrMultiplier + ")";
     emaLabel = "EMA (" + emaPeriods + ")";
 }
 
 function onIntervalClose (emaPeriods, atrPeriods, atrMultiplier) {
     
-    var trueRange,
-        ema,
-        atr;
-    
-    if (!previousClose) {
-        previousClose = CLOSE;
-        return null;
-    }
-    
-    trueRange = Math.max.apply(null, [
-        HIGH - LOW,
-        HIGH - previousClose,
-        LOW - previousClose
-    ]);
-    
-    previousClose = CLOSE;
-
-    if (lastEMA !== undefined) {
-
-        ema = ((CLOSE - lastEMA) * emaExponent) + lastEMA;
-        lastEMA = ema;
-        
-    } else if (values.length === emaPeriods) {
-
-        // First value is SMA (ensure there is plenty of run up data left before start)
-        lastEMA = Math.average(values);
-        
-        ema = lastEMA;
-
-    } else {
-
-        // Push closing mid price to end of values array
-        values.push(CLOSE);
-        
-        ema = null;
-    }
-    
-    if (trueRangeValues.length < atrPeriods) {
-        trueRangeValues.push(trueRange);
-        
-        if (trueRangeValues.length < atrPeriods) {
-            atr = null;
-        } else {
-            previousAverageTrueRange = Math.average(trueRangeValues);
-            atr = previousAverageTrueRange;
-        }
-    } else {
-        previousAverageTrueRange = ((previousAverageTrueRange * (atrPeriods - 1)) + trueRange) / atrPeriods;
-        atr = previousAverageTrueRange;
-    }
+    var previousClose = price(1),
+        ema = ema(emaPeriods),
+        atr = atr(atrPeriods);
 
     if (ema !== null && atr !== null) {
         return [{

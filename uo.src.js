@@ -6,6 +6,10 @@ function getRunUpCount (shortPeriods, mediumPeriods, longPeriods) {
     return longPeriods;
 }
 
+function getBufferSize (shortPeriods, mediumPeriods, longPeriods) {
+    return 1;
+}
+
 function getStudyAxisConfig () {
     return {
         min: 0,
@@ -19,10 +23,10 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (shortPeriods, mediumPeriods, longPeriods) {
-    validate("shortPeriods", shortPeriods);
-    validate("mediumPeriods", mediumPeriods);
-    validate("longPeriods", longPeriods);
+function validate (shortPeriods, mediumPeriods, longPeriods) {
+    validateField("shortPeriods", shortPeriods);
+    validateField("mediumPeriods", mediumPeriods);
+    validateField("longPeriods", longPeriods);
     if (shortPeriods >= mediumPeriods) {
         error("Ultimate Oscillator mediumPeriods must be greater than shortPeriods");
     }
@@ -31,7 +35,7 @@ function onStart (shortPeriods, mediumPeriods, longPeriods) {
     }
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Ultimate Oscillator " + fieldName + " must be a number");
     }
@@ -48,19 +52,13 @@ function validate (fieldName, value) {
 
 function onIntervalClose (shortPeriods, mediumPeriods, longPeriods) {
 
-    var shortAverage,
+    var previousClose = price(1),
+        shortAverage,
         mediumAverage,
         longAverage;
 
-    if (previousClose === undefined) {
-        previousClose = CLOSE;
-        return null;
-    }
-
     buyingPressures.push(CLOSE - Math.min(LOW, previousClose));
     trueRanges.push(Math.max(HIGH, previousClose) - Math.min(LOW, previousClose));
-
-    previousClose = CLOSE;
 
     if (buyingPressures.length < longPeriods) {
         return null;

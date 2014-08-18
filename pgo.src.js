@@ -1,8 +1,10 @@
-var emaExponent,
-    previousClose,
-    closes = [],
-    trueRanges = [],
-    averageTrueRange;
+function getBufferSize (periods) {
+    return periods;
+}
+
+function getRunUpCount (periods) {
+    return periods * 2;
+}
 
 function getStudyAxisConfig () {
     return {
@@ -15,7 +17,7 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Pretty Good Oscillator periods must be a number");
     }
@@ -28,45 +30,11 @@ function onStart (periods) {
     if (periods <= 0) {
         error("Pretty Good Oscillator periods must be greater than zero");
     }
-    emaExponent = 2 / (periods + 1);
 }
 
 function onIntervalClose (periods) {
-
-    var trueRange;
-
-    closes.push(CLOSE);
-
-    if (!previousClose) {
-        previousClose = CLOSE;
-        return null;
-    }
-    
-    trueRange = Math.max.apply(null, [
-        HIGH - LOW,
-        HIGH - previousClose,
-        LOW - previousClose
-    ]);
-
-    previousClose = CLOSE;
-
-    if (averageTrueRange === undefined) {
-        trueRanges.push(trueRange);
-        if (trueRanges.length === periods) {
-            averageTrueRange = Math.average(trueRanges);
-        }
-    } else {
-        averageTrueRange = ((trueRange - averageTrueRange) * emaExponent) + averageTrueRange;
-    }
-
-    if (closes < periods) {
-        return null;
-    } else if (closes > periods) {
-        closes.shift();
-    }
-
     return {
         overlay: false,
-        value: (CLOSE - Math.average(closes)) / averageTrueRange
-    };  
+        value: (CLOSE - Math.average(prices(periods))) / atr(periods)
+    };
 }

@@ -1,10 +1,8 @@
-var values = [];
-
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Williams %R periods must be a number");
     }
@@ -29,25 +27,13 @@ function getStudyAxisConfig () {
 
 function onIntervalClose (periods) {
     
-    var highestHigh,
-        lowestLow;
-    
-    values.push(CLOSE);
-    
-    if (values.length < periods) {
-        return null;
-    }
-    
-    values = values.slice(values.length - periods);
-    
-    highestHigh = Math.max.apply(null, values);
-    lowestLow = Math.min.apply(null, values);
+    var closes = prices(periods),
+        highestHigh = Math.max.apply(null, closes),
+        lowestLow = Math.min.apply(null, closes);
 
     return [{
         overlay: false,
         value: ((highestHigh - CLOSE) / (highestHigh - lowestLow)) * -100,
-        tooltip: {
-            valueDecimals: 1
-        }
+        precision: 1
     }];
 }

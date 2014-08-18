@@ -14,7 +14,11 @@ function getRunUpCount (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function getBufferSize (periods) {
+    return 0;
+}
+
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Money Flow Index periods must be a number");
     }

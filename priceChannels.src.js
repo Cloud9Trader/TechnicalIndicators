@@ -1,10 +1,8 @@
-var closes = [];
-
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Price Channels periods must be a number");
     }
@@ -21,19 +19,9 @@ function onStart (periods) {
 
 function onIntervalClose (periods) {
 
-    var highestHigh,
-        lowestLow;
-
-    closes.push(CLOSE);
-
-    if (closes.length < periods) {
-        return null;
-    } else if (closes.length > periods) {
-        closes.shift();
-    }
-
-    highestHigh = Math.highest(closes);
-    lowestLow = Math.lowest(closes);
+    var closes = prices(periods),
+        highestHigh = Math.highest(closes),
+        lowestLow = Math.lowest(closes);
 
     return [
         [lowestLow, highestHigh],

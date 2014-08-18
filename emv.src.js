@@ -5,6 +5,10 @@ function getRunUpCount (periods) {
     return periods;
 }
 
+function getBufferSize (periods) {
+    return 0;
+}
+
 function onStart (periods) {
     if (typeof periods !== "number") {
         error("Ease of Movement periods must be a number");
@@ -39,7 +43,6 @@ function onIntervalClose (periods) {
     boxRatio = (VOLUME / 100000000) / (HIGH - LOW);
     
     eom = distanceMoved / boxRatio;
-        
         
     previousMidpoint = midpoint;
     

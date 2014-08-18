@@ -2,7 +2,15 @@ var closes = [],
     exponent,
     EMA;
 
-function onStart (periods) {
+function getRunUpCount (periods) {
+    return periods * 2;
+}
+
+function getBufferSize () {
+    return 0;
+}
+
+function validate (periods) {
     if (typeof periods !== "number") {
         error("EMA periods must be a number");
     }
@@ -15,29 +23,22 @@ function onStart (periods) {
     if (periods <= 0) {
         error("EMA periods must be greater than 0");
     }
-    exponent = 2 / (periods + 1);
+}
+
+function onStart (periods) {
+    exponent = 2 / (periods + 1);  
 }
 
 function onIntervalClose (periods) {
-
     if (EMA === undefined) {
-
         closes.push(CLOSE);
-
         if (closes.length === periods) {
-
-            // First value is SMA (ensure there is plenty of run up data before start)
-            EMA = Math.average(closes);
-
+            EMA = Math.average(closes); // First value is SMA (ensure there is plenty of run up data before start)
         } else {
             return null;
         }
-
     } else {
-
         EMA = ((CLOSE - EMA) * exponent) + EMA;
-
     }
-
     return EMA;
 }

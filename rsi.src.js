@@ -3,13 +3,21 @@ var changes = [],
     previousAverageGain,
     previousAverageLoss;
 
+function getRunUpCount (periods) {
+    return periods * 2;
+}
+
+function getBufferSize (periods) {
+    return 0;
+}
+
 function getStudyAxisConfig () {
     return {
         tickPositions: [0, 30, 70, 100]
     };
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("RSI periods must be a number");
     }

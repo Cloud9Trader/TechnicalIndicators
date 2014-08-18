@@ -1,7 +1,4 @@
-var previousHigh,
-    previousLow,
-    previousClose,
-    positiveMovements = [],
+var positiveMovements = [],
     negativeMovements = [],
     trueRanges = [],
     positiveLabel,
@@ -9,6 +6,10 @@ var previousHigh,
 
 function getRunUpCount (periods) {
     return periods;
+}
+
+function getBufferSize (periods) {
+    return 1;
 }
 
 function getStudyAxisConfig () {
@@ -20,7 +21,7 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Vortex Indicator periods must be a number");
     }
@@ -33,28 +34,21 @@ function onStart (periods) {
     if (periods <= 0) {
         error("Vortex Indicator periods must be greater than 0");
     }
+}
+
+function onStart (periods) {
     positiveLabel = "vtx(" + periods + ") Positive";
     negativeLabel = "vtx(" + periods + ") Negative";
 }
 
 function onIntervalClose (periods) {
 
-    var trueRangeSum;
+    var previousClose = price.close(1),
+        trueRangeSum;
 
-    if (previousHigh === undefined) {
-        previousHigh = HIGH;
-        previousLow = LOW;
-        previousClose = CLOSE;
-        return null;
-    }
-
-    positiveMovements.push(HIGH - previousLow);
-    negativeMovements.push(LOW - previousHigh);
+    positiveMovements.push(HIGH - price.low(1));
+    negativeMovements.push(LOW - price.high(1));
     trueRanges.push(Math.max(HIGH - LOW, Math.abs(HIGH - previousClose), Math.abs(LOW - previousClose)));
-
-    previousHigh = HIGH;
-    previousLow = LOW;
-    previousClose = CLOSE;
 
     if (positiveMovements.length < periods) {
         return null;

@@ -1,10 +1,15 @@
 var bullLabel,
-    bearLabel,
-    closes = [],
-    exponent,
-    EMA;
+    bearLabel;
 
-function onStart (periods) {
+function getRunUpCount (periods) {
+    return periods * 2;
+}
+
+function getBufferSize () {
+    return 0;
+}
+
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Elder Bull/Bear Power periods must be a number");
     }
@@ -17,23 +22,16 @@ function onStart (periods) {
     if (periods <= 0) {
         error("Elder Bull/Bear Power periods must be greater than 0");
     }
-    exponent = 2 / (periods + 1);
+}
+
+function onStart (periods) {
     bullLabel = "Elder Bull Power (" + periods + ")";
     bearLabel = "Elder Bear Power (" + periods + ")";
 }
 
 function onIntervalClose (periods) {
 
-    if (EMA === undefined) {
-        closes.push(CLOSE);
-        if (closes.length === periods) {
-            EMA = Math.average(closes);
-        } else {
-            return null;
-        }
-    } else {
-        EMA = ((CLOSE - EMA) * exponent) + EMA;
-    }
+    var EMA = ema(periods);
 
     return [{
         label: bullLabel,

@@ -1,10 +1,8 @@
-var closes = [];
-
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("WMA periods must be a number");
     }
@@ -21,15 +19,8 @@ function onStart (periods) {
 
 function onIntervalClose (periods) {
 
-    var nominator = 0;
-
-    closes.push(CLOSE);
-
-    if (closes.length < periods) {
-        return null;
-    } else if (closes.length > periods) {
-        closes.shift();
-    }
+    var closes = prices(periods),
+        nominator = 0;
 
     closes.forEach(function (value, index) {
         nominator += value * (index + 1);

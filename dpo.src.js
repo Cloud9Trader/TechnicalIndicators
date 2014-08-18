@@ -1,12 +1,10 @@
-var values = [];
-var smaValues = [];
 var displacement;
 
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("DPO periods must be a number");
     }
@@ -19,26 +17,17 @@ function onStart (periods) {
     if (periods <= 0) {
         error("DPO periods must be greater than zero");
     }
+}
+
+function onStart () {
     displacement = Math.floor((periods / 2) + 1);
 }
 
 function onIntervalClose (periods) {
-
-    var sma;
-
-    values.push(CLOSE);
-
-    if (values.length < periods) {
-        return null;
-    } else if (values.length > periods) {
-        values.shift();
-    }
-
-    sma = Math.average(values);
-
+    var sma = Math.average(prices(periods));
     return [{
         name: "DPO",
-        value: values[values.length - displacement] - sma,
+        value: price(displacement) - sma,
         plotOffset: -displacement,
         type: "area",
         overlay: false

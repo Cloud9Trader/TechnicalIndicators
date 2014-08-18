@@ -1,10 +1,8 @@
-var values = [];
-
-function getRunUpCount (periods) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Rate Of Change periods must be a number");
     }
@@ -21,23 +19,10 @@ function onStart (periods) {
 
 function onIntervalClose (periods) {
 
-    var periodStartClose;
-    
-    values.push(CLOSE);
-    
-    if (values.length < periods) {
-        return null;
-    }
-    
-    // Splice occasionally
-    if (values.length > periods * 3)  {
-        values.splice(0, values.length - periods);
-    }
-    
-    periodStartClose = values[values.length - periods];
+    var periodStartClose = price(periods);
     
     return {
         overlay: false,
-        value: ((CLOSE - periodStartClose) / periodStartClose) / 100
+        value: ((CLOSE - periodStartClose) / periodStartClose) * 100
     };
 }

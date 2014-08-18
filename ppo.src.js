@@ -1,42 +1,29 @@
-var values = [];
-var fastExponent;
-var slowExponent;
-var signalExponent;
-var fastEMA;
-var slowEMA;
-var ppoValues = [];
-var ppoEMA;
-var label;
-var signalLabel;
-var histogramLabel;
+var signalExponent,
+    ppoValues = [],
+    ppoEMA,
+    label,
+    signalLabel,
+    histogramLabel;
 
+function getRunUpCount (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+    return (slowEMAPeriods * 2) + (signalEMAPeriods || 0);
+}
 
-function onStart (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+function validate (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     
-    validate("fastEMAPeriods", fastEMAPeriods);
-    validate("slowEMAPeriods", slowEMAPeriods);
+    validateField("fastEMAPeriods", fastEMAPeriods);
+    validateField("slowEMAPeriods", slowEMAPeriods);
     
     if (fastEMAPeriods >= slowEMAPeriods) {
         error("Price Percentage Oscillator slowEMAPeriods must be greater than fastEMAPeriods");
     }
         
-    fastExponent = 2 / (fastEMAPeriods + 1);
-    slowExponent = 2 / (slowEMAPeriods + 1);
-
     if (signalEMAPeriods) {
-
-        validate("signalEMAPeriods", signalEMAPeriods);
-
-        label = "Price Percentage Oscillator (" + fastEMAPeriods + "," + slowEMAPeriods + "," + signalEMAPeriods + ")";
-        signalLabel = label + " Signal";
-        histogramLabel = label + " Histogram";
-
-        signalExponent = 2 / (signalEMAPeriods + 1);
+        validateField("signalEMAPeriods", signalEMAPeriods);
     }
 }
 
-function validate (fieldName, value) {
-    
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Price Percentage Oscillator " + fieldName + " must be a number");
     }
@@ -51,30 +38,28 @@ function validate (fieldName, value) {
     }
 }
 
-function getRunUpCount (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
-    return slowEMAPeriods + signalEMAPeriods;
+function onStart (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+
+    if (signalEMAPeriods) {
+
+        label = "Price Percentage Oscillator (" + fastEMAPeriods + "," + slowEMAPeriods + "," + signalEMAPeriods + ")";
+        signalLabel = label + " Signal";
+        histogramLabel = label + " Histogram";
+
+        signalExponent = 2 / (signalEMAPeriods + 1);
+    }
 }
 
 function onIntervalClose (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     
-    var ppo;
+    var fastEMA = ema(fastEMAPeriods),
+        slowEMA = ema(slowEMAPeriods),
+        ppo;
 
-    if (slowEMA !== undefined) {
-
-        slowEMA =  ((CLOSE - slowEMA) * slowExponent) + slowEMA;
-        fastEMA =  ((CLOSE - fastEMA) * fastExponent) + fastEMA;
-        
-    } else if (values.length === slowEMAPeriods) {
-        
-        slowEMA = Math.average(values);
-        fastEMA = Math.average(values.slice(values.length - fastEMAPeriods));
-        
-    } else {
-
-        values.push(CLOSE);
+    if (!fastEMA || !slowEMA) {
         return null;
     }
-    
+
     ppo = ((fastEMA - slowEMA) / slowEMA) * 100;
 
     if (!signalEMAPeriods) {

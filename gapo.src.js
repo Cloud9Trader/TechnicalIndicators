@@ -1,7 +1,4 @@
-var highs = [],
-    lows = [];
-
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("Gopalakrishnan Range Index periods must be a number");
     }
@@ -17,19 +14,10 @@ function onStart (periods) {
 }
 
 function onIntervalClose (periods) {
-
-    highs.push(HIGH);
-    lows.push(LOW);
-
-    if (highs.length < periods) {
-        return null;
-    } else if (highs.length > periods) {
-        highs.shift();
-        lows.shift();
-    }
-
+    var highestHigh = Math.highest(prices.high(periods)),
+        lowestLow = Math.lowest(prices.low(periods));
     return {
         overlay: false,
-        value: Math.log(Math.max.apply(null, highs) - Math.min.apply(null, lows)) / Math.log(periods)
+        value: Math.log(highestHigh - lowestLow) / Math.log(periods)
     };
 }

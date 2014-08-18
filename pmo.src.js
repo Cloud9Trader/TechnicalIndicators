@@ -17,22 +17,29 @@ function getRunUpCount (firstEMAPeriods, secondEMAPeriods, signalEMAPeriods) {
     return firstEMAPeriods + secondEMAPeriods + signalEMAPeriods + 1;
 }
 
+function getBufferSize (firstEMAPeriods, secondEMAPeriods, signalEMAPeriods) {
+    return 0;
+}
+
+function validate (firstEMAPeriods, secondEMAPeriods, signalEMAPeriods) {
+    validateField("firstEMAPeriods", firstEMAPeriods);
+    validateField("secondEMAPeriods", secondEMAPeriods);
+    if (signalEMAPeriods) {
+        validateField("signalEMAPeriods", signalEMAPeriods);
+    }
+}
+
 function onStart (firstEMAPeriods, secondEMAPeriods, signalEMAPeriods) {
-    validate("firstEMAPeriods", firstEMAPeriods);
-    validate("secondEMAPeriods", secondEMAPeriods);
-    
     firstEMAExponent = 2 / (firstEMAPeriods + 1);
     secondEMAExponent = 2 / (secondEMAPeriods + 1);
-    
     if (signalEMAPeriods) {
-        validate("signalEMAPeriods", signalEMAPeriods);
         label = "PMO(" + firstEMAPeriods + "," + secondEMAPeriods + "," + signalEMAPeriods + ")";
         signalLabel = label + " Signal Line";
         signalEMAExponent = 2 / (signalEMAPeriods + 1);
     }
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Price Momentum Oscillator " + fieldName + " must be a number");
     }

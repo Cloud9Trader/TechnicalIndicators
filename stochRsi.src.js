@@ -1,8 +1,4 @@
-var changes = [],
-    lastClose,
-    previousAverageGain,
-    previousAverageLoss,
-    RSIs = [];
+var RSIs = [];
 
 function getStudyAxisConfig () {
     return {
@@ -10,7 +6,7 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (periods) {
+function validate (periods) {
     if (typeof periods !== "number") {
         error("StochRSI periods must be a number");
     }
@@ -27,73 +23,21 @@ function onStart (periods) {
 
 function onIntervalClose (periods) {
 
-    var currentGain = 0,
-        currentLoss = 0,
-        relativeStrength,
-        RSI,
-        lowestRSI;
-    
-    if (previousAverageGain === undefined) {
-        if (!lastClose) {
-            changes.push(CLOSE - OPEN);
-        } else {
-            changes.push(CLOSE - lastClose);
-        }
-        lastClose = CLOSE;
-        if (changes.length < periods) {
-            return null;
-        }
-        if (changes.length > periods) {
-            changes.shift();
-        }
-        previousAverageGain = changes.reduce(function (memo, change) {
-            if (change > 0) {
-                return memo + change;
-            } else {
-                return 0;
-            }
-        }, 0) / periods;
-        previousAverageLoss = changes.reduce(function (memo, change) {
-            if (change < 0) {
-                return memo + Math.abs(change);
-            } else {
-                return 0;
-            }
-        }, 0) / periods;
-    } else {
-        
-        if (CLOSE > lastClose) {
-            currentGain = CLOSE - lastClose;
-        } else {
-            currentLoss = lastClose - CLOSE;
-        }
-        
-        lastClose = CLOSE;
-        
-        previousAverageGain = ((previousAverageGain * (periods - 1)) + currentGain) / periods;
-        previousAverageLoss = ((previousAverageLoss * (periods - 1)) + currentLoss) / periods;
-    }
-    
-    if (previousAverageLoss === 0) {
-        // Avoid divide by zero scenario
-        RSI = 100;
-    } else {
-        relativeStrength = previousAverageGain / previousAverageLoss;
-        RSI = 100 - (100 / (1 + relativeStrength));
-    }
+    var RSI = rsi(periods),
+        RSIPeriodLow;
     
     RSIs.push(RSI);
 
     if (RSIs.length < periods) {
         return null;
-    } else if (RSIs.length < periods) {
+    } else if (RSIs.length > periods) {
         RSIs.shift();
     }
 
-    lowestRSI = Math.min.apply(null, RSIs);
+    RSIPeriodLow = Math.min.apply(null, RSIs);
 
     return {
         overlay: false,
-        value: (RSI - lowestRSI) / (Math.max.apply(null, RSIs) - lowestRSI)
+        value: (RSI - RSIPeriodLow) / (Math.max.apply(null, RSIs) - RSIPeriodLow)
     };
 }

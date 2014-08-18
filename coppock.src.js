@@ -1,19 +1,20 @@
-var closePeriodsCount,
-    closes = [],
-    firstRoCs = [];
+var firstRoCs = [];
 
 function getRunUpCount (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
-    closePeriodsCount = Math.max(firstRoCPeriods, secondRoCPeriods);
-    return closePeriodsCount + wmaPeriods;
+    return wmaPeriods;
 }
 
-function onStart (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
-    validate("firstRoCPeriods", firstRoCPeriods);
-    validate("wmaPeriods", wmaPeriods);
-    validate("secondRoCPeriods", secondRoCPeriods);
+function getBufferSize (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
+    return Math.max(firstRoCPeriods, secondRoCPeriods) + 1;
 }
 
-function validate (fieldName, value) {
+function validate (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
+    validateField("firstRoCPeriods", firstRoCPeriods);
+    validateField("wmaPeriods", wmaPeriods);
+    validateField("secondRoCPeriods", secondRoCPeriods);
+}
+
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Coppock Curve " + fieldName + " must be a number");
     }
@@ -29,22 +30,14 @@ function validate (fieldName, value) {
 }
 
 function onIntervalClose (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
-
     var firstRoCClose,
         firstRoC,
         secondRoCClose,
         secondRoC,
         wmaNominator = 0;
 
-    closes.push(CLOSE);
+    firstRoCClose = price(firstRoCPeriods);
 
-    if (closes.length < closePeriodsCount) {
-        return null;
-    } else if (closes.length > closePeriodsCount * 3) {
-        closes = closes.slice(closes.length - closePeriodsCount);
-    }
-
-    firstRoCClose = closes[closes.length - firstRoCPeriods];
     firstRoC = ((CLOSE - firstRoCClose) / firstRoCClose) * 100;
 
     firstRoCs.push(firstRoC);
@@ -59,7 +52,7 @@ function onIntervalClose (firstRoCPeriods, wmaPeriods, secondRoCPeriods) {
         wmaNominator += roc * (index + 1);
     });
 
-    secondRoCClose = closes[closes.length - secondRoCPeriods];
+    secondRoCClose = price(secondRoCPeriods);
     secondRoC = ((CLOSE - secondRoCClose) / secondRoCClose) * 100;
 
     return {

@@ -9,13 +9,20 @@ function getRunUpCount (emaPeriods, summationPeriods) {
     return (emaPeriods * 2) + summationPeriods;
 }
 
+function getBufferSize (emaPeriods, summationPeriods) {
+    return 0;
+}
+
+function validate (emaPeriods, summationPeriods) {
+    validateField("emaPeriods", emaPeriods);
+    validateField("summationPeriods", summationPeriods);
+}
+
 function onStart (emaPeriods, summationPeriods) {
-    validate("emaPeriods", emaPeriods);
-    validate("summationPeriods", summationPeriods);
     emaExponent = 2 / (emaPeriods + 1);
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Mass Index " + fieldName + " must be a number");
     }

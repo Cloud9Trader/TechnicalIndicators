@@ -12,7 +12,15 @@ var exponent,
     TRIXs = [],
     signal;
 
-function onStart (periods, signalPeriods) {
+function getRunUpCount (periods, signalPeriods) {
+    return periods * 6 + (signalPeriods || 0);
+}
+
+function getBufferSize (periods, signalPeriods) {
+    return 0;
+}
+
+function validate (periods, signalPeriods) {
     if (typeof periods !== "number") {
         error("TRIX periods must be a number");
     }
@@ -25,9 +33,6 @@ function onStart (periods, signalPeriods) {
     if (periods <= 0) {
         error("TRIX periods must be greater than 0");
     }
-
-    exponent = 2 / (periods + 1);
-
     if (signalPeriods) {
         if (typeof signalPeriods !== "number") {
             error("TRIX signalPeriods must be a number");
@@ -41,7 +46,12 @@ function onStart (periods, signalPeriods) {
         if (signalPeriods < 0) {
             error("TRIX periods must be greater than or equal to 0");
         }
+    }
+}
 
+function onStart (periods, signalPeriods) {
+    exponent = 2 / (periods + 1);
+    if (signalPeriods) {
         signalExponent = 2 / (signalPeriods + 1);
         label = "trix(" + periods + "," + signalPeriods + ")";
         signalLabel = label + " Signal";
@@ -50,18 +60,8 @@ function onStart (periods, signalPeriods) {
 
 function onIntervalClose (periods, signalPeriods) {
 
-    var TRIX;
-    
-    if (singleEMA === undefined) {
-        closes.push(CLOSE);
-        if (closes.length === periods) {
-            singleEMA = Math.average(closes);
-        } else {
-            return null;
-        }
-    } else {
-        singleEMA = ((CLOSE - singleEMA) * exponent) + singleEMA;
-    }
+    var TRIX,
+        singleEMA = ema(periods);
 
     if (doubleEMA === undefined) {
         singleEMAs.push(singleEMA);

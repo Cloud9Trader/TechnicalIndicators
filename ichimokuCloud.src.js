@@ -1,19 +1,15 @@
-var closes = [],
-    runUp;
-
-function getRunUpCount(conversionLinePeriods, baseLinePeriods, leadingSpanPeriods) {
-    runUp = Math.max(conversionLinePeriods, baseLinePeriods, leadingSpanPeriods);
-    return runUp;
+function getBufferSize (conversionLinePeriods, baseLinePeriods, leadingSpanPeriods) {
+    return Math.max(conversionLinePeriods, baseLinePeriods, leadingSpanPeriods);
 }
 
-function onStart (conversionLinePeriods, baseLinePeriods, leadingSpanPeriods, laggingSpanPeriods) {
-    validate("conversionLinePeriods", conversionLinePeriods);
-    validate("baseLinePeriods", baseLinePeriods);
-    validate("leadingSpanPeriods", leadingSpanPeriods);
-    validate("laggingSpanPeriods", laggingSpanPeriods);
+function validate (conversionLinePeriods, baseLinePeriods, leadingSpanPeriods, laggingSpanPeriods) {
+    validateField("conversionLinePeriods", conversionLinePeriods);
+    validateField("baseLinePeriods", baseLinePeriods);
+    validateField("leadingSpanPeriods", leadingSpanPeriods);
+    validateField("laggingSpanPeriods", laggingSpanPeriods);
 }
 
-function validate (fieldName, value) {
+function validateField (fieldName, value) {
     if (typeof value !== "number") {
         error("Ichimoku Cloud " + fieldName + " must be a number");
     }
@@ -30,34 +26,20 @@ function validate (fieldName, value) {
 
 function onIntervalClose (conversionLinePeriods, baseLinePeriods, leadingSpanPeriods, laggingSpanPeriods) {
 
-    var conversionLineCloses,
-        baseLineCloses,
-        leadingSpanBCloses,
+    var conversionLineCloses = prices(conversionLinePeriods),
+        baseLineCloses = prices(baseLinePeriods),
+        leadingSpanBCloses = prices(leadingSpanPeriods),
         conversionLine,
         baseLine,
         spanALine,
         spanBLine,
         greenCloud,
         redCloud;
-    
-    closes.push(CLOSE);
-    
-    if (closes.length < runUp) {
-        return null;
-    }
-    
-    if (closes.length > runUp) {
-        closes.shift();
-    }
-    
-    conversionLineCloses = closes.slice(closes.length - conversionLinePeriods);
-    baseLineCloses = closes.slice(closes.length - baseLinePeriods);
-    leadingSpanBCloses = closes.slice(closes.length - leadingSpanPeriods);
         
     conversionLine = (Math.highest(conversionLineCloses) + Math.lowest(conversionLineCloses)) / 2;
     baseLine = (Math.highest(baseLineCloses) + Math.lowest(baseLineCloses)) / 2;
     spanALine = (conversionLine + baseLine) / 2;
-    spanBLine = (Math.highest(leadingSpanBCloses) + Math.lowest(leadingSpanBCloses)) / 2; 
+    spanBLine = (Math.highest(leadingSpanBCloses) + Math.lowest(leadingSpanBCloses)) / 2;
    
     if (spanALine > spanBLine) {
         greenCloud = [spanALine, spanBLine];

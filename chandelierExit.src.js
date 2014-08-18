@@ -1,16 +1,15 @@
-var closes = [],
-    previousClose,
-    trueRangeValues = [],
-    averageTrueRange,
-    shortLabel,
+var shortLabel,
     longLabel;
 
+function getRunUpCount (periods) {
+    return periods * 2;
+}
 
-function getRunUpCount (periods, multiplier) {
+function getBufferSize (periods) {
     return periods;
 }
 
-function onStart (periods, multiplier) {
+function validate (periods, multiplier) {
     if (typeof periods !== "number") {
         error("Chandelier Exit periods must be a number");
     }
@@ -29,49 +28,19 @@ function onStart (periods, multiplier) {
     if (multiplier <= 0) {
         error("Chandelier Exit multiplier must be greater than zero");
     }
+}
+
+function onStart (periods, multiplier) {
     shortLabel = "chandelierExit(" + periods + "," + multiplier + ") Short";
     longLabel = "chandelierExit(" + periods + "," + multiplier + ") Long";
 }
 
 function onIntervalClose (periods, multiplier) {
 
-    var trueRange,
-        highestHigh,
-        lowestLow;
-
-    if (!previousClose) {
-        previousClose = CLOSE;
-        return null;
-    }
-    
-    closes.push(CLOSE);
-    if (closes.length > periods) {
-        closes.shift();
-    }
-    
-    trueRange = Math.highest([
-        HIGH - LOW,
-        HIGH - previousClose,
-        LOW - previousClose
-    ]);
-    
-    previousClose = CLOSE;
-    
-    if (trueRangeValues.length < periods) {
-        trueRangeValues.push(trueRange);
-        
-        if (trueRangeValues.length < periods) {
-            return null;
-        } else {
-            averageTrueRange = Math.average(trueRangeValues);
-            return null;
-        }
-    } else {
-        averageTrueRange = ((averageTrueRange * (periods - 1)) + trueRange) / periods;
-    }
-
-    highestHigh = Math.highest(closes);
-    lowestLow = Math.lowest(closes);
+    var averageTrueRange = atr(periods),
+        closes = prices(periods),
+        highestHigh = Math.highest(closes),
+        lowestLow = Math.lowest(closes);
     
     return [{
         name: shortLabel,

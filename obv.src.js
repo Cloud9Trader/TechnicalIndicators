@@ -1,16 +1,13 @@
-var lastClose,
-    onBalanceVolume = 0;
+var onBalanceVolume = 0;
 
-function getRunUpCount () {
+function getBufferSize () {
     return 1;
 }
 
 function onIntervalClose () {
 
-    if (lastClose === undefined) {
-        lastClose = CLOSE;
-        return null;
-    }
+    var lastClose = price(1);
+
     if (CLOSE > lastClose) {
         onBalanceVolume += VOLUME;
     }

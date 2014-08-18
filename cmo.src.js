@@ -7,7 +7,7 @@ var signalLabel,
     cmos = [];
 
 function getRunUpCount (periods, signalPeriods) {
-    return periods + signalPeriods;
+    return periods + (signalPeriods || 0);
 }
 
 function getStudyAxisConfig () {
@@ -16,7 +16,7 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (periods, signalPeriods) {
+function validate (periods, signalPeriods) {
     if (typeof periods !== "number") {
         error("Chande Momentum Oscillator periods must be a number");
     }
@@ -43,7 +43,10 @@ function onStart (periods, signalPeriods) {
     }
     if (signalPeriods < 0) {
         error("Chande Momentum Oscillator signalPeriods must be greater than or equal to zero");
-    }
+    }   
+}
+
+function onStart (periods, signalPeriods) {
     signalLabel = "cmo(" + periods + "," + signalPeriods + ") Signal";
     signalExponent = 2 / (signalPeriods + 1);
 }

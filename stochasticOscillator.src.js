@@ -1,13 +1,16 @@
-var values = [];
-var oscillatorValues = [];
-var label;
-var maLabel;
+var values = [],
+    label,
+    maLabel;
 
 function getRunUpCount (periods, smaPeriods) {
-    return periods + smaPeriods;
+    return smaPeriods;
 }
 
-function onStart (periods, smaPeriods) {
+function getBufferSize (periods, smaPeriods) {
+    return periods;
+}
+
+function validate (periods, smaPeriods) {
     if (typeof periods !== "number") {
         error("Stochastic Oscillator periods must be a number");
     }
@@ -32,6 +35,9 @@ function onStart (periods, smaPeriods) {
     if (smaPeriods <= 0) {
         error("Stochastic Oscillator smaPeriods must be greater than 0");
     }
+}
+
+function onStart (periods, smaPeriods) {
     label = "Stochastic Oscillator (" + periods + ")";
     maLabel = "Stochastic Oscillator (" + periods + ") " + smaPeriods + "-Period Moving Average";
 }
@@ -46,39 +52,30 @@ function getStudyAxisConfig () {
 
 function onIntervalClose (periods, smaPeriods) {
     
-    var oscillatorValue,
-        lowestLow;
-    
-    values.push(CLOSE);
-    
-    if (values.length < periods) {
+    var closes = prices(periods),
+        periodLow = Math.min.apply(null, closes),
+        periodHigh = Math.max.apply(null, closes),
+        value = ((CLOSE - periodLow) / (periodHigh - periodLow)) * 100;
+ 
+    values.push(value);
+
+    if (values.length < smaPeriods) {
         return null;
-    } else if (values.length > periods) {
+    } else if (values.length > smaPeriods) {
         values.shift();
-    }
-        
-    lowestLow = Math.min.apply(null, values);
-
-    oscillatorValue = ((CLOSE - lowestLow) / (Math.max.apply(null, values) - lowestLow)) * 100;
-    oscillatorValues.push(oscillatorValue);
-
-    if (oscillatorValues.length < smaPeriods) {
-        return null;
-    } else if (oscillatorValues.length > smaPeriods) {
-        oscillatorValues.shift();
     }
 
     return [{
         overlay: false,
         name: label,
-        value: oscillatorValue,
+        value: value,
         tooltip: {
             valueDecimals: 1
         }
     }, {
         overlay: false,
         name: maLabel,
-        value: Math.average(oscillatorValues),
+        value: Math.average(values),
         tooltip: {
             valueDecimals: 1
         }

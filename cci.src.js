@@ -1,5 +1,13 @@
 var typicalPrices = [];
 
+function getBufferSize () {
+    return 0;
+}
+
+function getRunUpCount (periods) {
+    return periods;
+}
+
 function getStudyAxisConfig () {
     return {
         gridLineWidth: 0,
@@ -11,7 +19,7 @@ function getStudyAxisConfig () {
     };
 }
 
-function onStart (periods, constant) {
+function validate (periods, constant) {
     if (typeof periods !== "number") {
         error("CCI periods must be a number");
     }
@@ -33,7 +41,6 @@ function onStart (periods, constant) {
 }
 
 function onIntervalClose (periods, constant) {
-
     var typicalPrice = (HIGH + LOW + CLOSE) / 3,
         typicalPriceSMA,
         meanDeviation;
