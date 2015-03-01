@@ -53,6 +53,7 @@ For the API for using these in your trading algorithms see [Algorithms API Refer
 * Chande Momentum Oscillator `cmo(periods, signalPeriods)`
 * Center of Gravity Oscillator `cog(periods, signalPeriods)`
 * Coppock Curve `coppock(firstRoCPeriods, wmaPeriods, secondRoCPeriods)`
+* Daily Pivot `dailyPivot()`
 * Detrended Price Oscillator `dpo(periods)`
 * Elder Bull/Bear Power `elderBBPower(periods)`
 * Exponential Moving Average `ema(periods)`
