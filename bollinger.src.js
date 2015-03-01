@@ -37,9 +37,13 @@ function onIntervalClose (periods, deviations) {
     SMA = Math.mean(closePrices);
     margin = Math.standardDeviation(closePrices) * deviations;
     
-    return [[SMA - margin, SMA + margin], {
-        value: SMA,
-        dashStyle: "Dash",
-        name: SMASeriesName,
-    }];
+    return [
+        SMA - margin,
+        SMA + margin, 
+        {
+            value: SMA,
+            dashStyle: "Dash",
+            name: SMASeriesName
+        }
+    ];
 }

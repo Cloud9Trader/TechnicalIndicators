@@ -44,9 +44,11 @@ function onIntervalClose (periods, multiplier) {
     
     return [{
         name: shortLabel,
-        value: lowestLow + (averageTrueRange * multiplier)
+        value: lowestLow + (averageTrueRange * multiplier),
+        envelope: false
     }, {
         name: longLabel,
-        value: highestHigh - (averageTrueRange * multiplier)
+        value: highestHigh - (averageTrueRange * multiplier),
+        envelope: false
     }];
 }

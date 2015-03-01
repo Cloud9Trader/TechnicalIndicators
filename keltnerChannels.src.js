@@ -6,7 +6,7 @@ function getRunUpCount (emaPeriods, atrPeriods, atrMultiplier) {
 }
 
 function getBufferSize (emaPeriods, atrPeriods, atrMultiplier) {
-    return 1;
+    return emaPeriods;
 }
 
 function validate (emaPeriods, atrPeriods, atrMultiplier) {
@@ -49,15 +49,17 @@ function onStart (emaPeriods, atrPeriods, atrMultiplier) {
 
 function onIntervalClose (emaPeriods, atrPeriods, atrMultiplier) {
     
-    var previousClose = price(1),
-        ema = ema(emaPeriods),
+    var ema = ema(emaPeriods),
         atr = atr(atrPeriods);
 
     if (ema !== null && atr !== null) {
+        // Will be converted to envelope
         return [{
             name: label,
-            value: [ema - (atr * atrMultiplier), ema + (atr * atrMultiplier)],
+            value: ema - (atr * atrMultiplier),
             color: "#7cb5ec"
+        }, {
+            value: ema + (atr * atrMultiplier)
         }, {
             name: emaLabel,
             value: ema,

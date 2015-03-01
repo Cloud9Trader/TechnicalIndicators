@@ -1,5 +1,5 @@
 function getBufferSize (periods) {
-    return periods;
+    return periods + 1;
 }
 
 function validate (periods) {

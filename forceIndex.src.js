@@ -3,7 +3,7 @@ var emaExponent,
     forceIndexEMA;
 
 function getBufferSize (periods) {
-    return 1;
+    return 2;
 }
 
 function getRunUpCount (periods) {

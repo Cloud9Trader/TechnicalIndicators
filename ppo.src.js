@@ -9,6 +9,10 @@ function getRunUpCount (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     return (slowEMAPeriods * 2) + (signalEMAPeriods || 0);
 }
 
+function getBufferSize (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
+    return slowEMAPeriods;
+}
+
 function validate (fastEMAPeriods, slowEMAPeriods, signalEMAPeriods) {
     
     validateField("fastEMAPeriods", fastEMAPeriods);

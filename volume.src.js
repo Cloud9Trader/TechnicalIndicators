@@ -1,4 +1,4 @@
-function getRunUpCount () {
+function getBufferSize () {
     return 0;
 }
 

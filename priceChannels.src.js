@@ -24,7 +24,8 @@ function onIntervalClose (periods) {
         lowestLow = Math.lowest(closes);
 
     return [
-        [lowestLow, highestHigh],
+        lowestLow,
+        highestHigh,
         {
             dashStyle: "Dash",
             value: (highestHigh + lowestLow) / 2

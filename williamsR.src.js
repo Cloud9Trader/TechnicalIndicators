@@ -1,5 +1,5 @@
 function getBufferSize (periods) {
-    return periods;
+    return periods + 1;
 }
 
 function validate (periods) {
@@ -31,9 +31,9 @@ function onIntervalClose (periods) {
         highestHigh = Math.max.apply(null, closes),
         lowestLow = Math.min.apply(null, closes);
 
-    return [{
+    return {
         overlay: false,
         value: ((highestHigh - CLOSE) / (highestHigh - lowestLow)) * -100,
         precision: 1
-    }];
+    };
 }

@@ -1,7 +1,7 @@
 var onBalanceVolume = 0;
 
 function getBufferSize () {
-    return 1;
+    return 2;
 }
 
 function onIntervalClose () {

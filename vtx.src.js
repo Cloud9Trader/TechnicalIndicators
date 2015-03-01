@@ -9,7 +9,7 @@ function getRunUpCount (periods) {
 }
 
 function getBufferSize (periods) {
-    return 1;
+    return 2;
 }
 
 function getStudyAxisConfig () {

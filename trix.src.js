@@ -17,7 +17,7 @@ function getRunUpCount (periods, signalPeriods) {
 }
 
 function getBufferSize (periods, signalPeriods) {
-    return 0;
+    return periods;
 }
 
 function validate (periods, signalPeriods) {

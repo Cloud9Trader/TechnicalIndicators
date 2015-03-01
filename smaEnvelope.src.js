@@ -38,7 +38,8 @@ function onIntervalClose (periods, envelope) {
         envelope = sma * (envelope / 100);
     
     return [
-        [sma - envelope, sma + envelope],
+        sma - envelope,
+        sma + envelope,
         {name: smaLabel, dashStyle: "Dash", value: sma}
     ];
 }

@@ -7,7 +7,7 @@ function getRunUpCount (shortPeriods, mediumPeriods, longPeriods) {
 }
 
 function getBufferSize (shortPeriods, mediumPeriods, longPeriods) {
-    return 1;
+    return 2;
 }
 
 function getStudyAxisConfig () {

@@ -2,8 +2,8 @@ function getRunUpCount (periods) {
     return periods * 2;
 }
 
-function getBufferSize () {
-    return 0;
+function getBufferSize (periods) {
+    return periods;
 }
 
 function validate (periods, envelope) {
@@ -28,6 +28,7 @@ function validate (periods, envelope) {
 }
 
 function onIntervalClose (periods, envelope) {
-    var EMA = ema(periods);
-    return [EMA, [EMA - envelope, EMA + envelope]];
+    var EMA = ema(periods),
+        envelope = EMA * (envelope / 100);
+    return [EMA - envelope, EMA + envelope, EMA];
 }

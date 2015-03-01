@@ -34,7 +34,7 @@ function validate (periods) {
 }
 
 function onIntervalClose (periods) {
-    var typicalPrice = (HIGH + LOW + CLOSE) / 3,
+    var typicalPrice = (HIGH + LOW + CLOSE) / 3, // AKA pivot point
         moneyFlow = typicalPrice * VOLUME * (CLOSE > OPEN ? 1 : -1),
         positiveMoneyFlow = 0,
         negativeMoneyFlow = 0,

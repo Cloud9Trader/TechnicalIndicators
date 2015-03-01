@@ -5,8 +5,8 @@ function getRunUpCount (periods) {
     return periods * 2;
 }
 
-function getBufferSize () {
-    return 0;
+function getBufferSize (periods) {
+    return periods;
 }
 
 function validate (periods) {
