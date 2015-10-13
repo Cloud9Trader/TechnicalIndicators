@@ -88,5 +88,6 @@ For the API for using these in your trading algorithms see [Algorithms API Refer
 * Ultimate Oscillator `uo(shortPeriods, mediumPeriods, longPeriods)`
 * Volume `volume()`
 * Vortex Indicator `vtx(periods)`
+* Wilders Moving Average `wilderMA(periods)`
 * Williams %R `williamsR(periods)`
 * Weighted Moving Average `wma(periods)`
