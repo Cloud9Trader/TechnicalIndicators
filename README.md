@@ -6,18 +6,18 @@ Technical Indicators
 
 These indicator scripts, written in JavaScript, power the built in technical indicators on the platform.
 
-Their job is to derive a value, or set of values, from price data at any given moment in time to be drawn onto charts as one or several overlays or studies. They can also be used inside your Cloud9Trader trading scripts.
+Indicators derive values from price data at any given moment in time to be drawn onto charts as one or several overlays or studies. They can also be used inside your Cloud9Trader trading scripts.
 
 We've included them in this repository so that you can use them as a reference to help build your own indicators - just create a new indicator on the 'Algorithms' screen and copy the code in.
 
-They're also here for those who are just interested in the maths behind technical analysis.
+They're for those are interested in maths behind technical analysis.
 
 If you spot any issues with them or would like to add your own indicator to Cloud9Trader's built in collection, we'd be very grateful for your pull requests.
 
 
 ###Functions
 
-The indicators will contain at minimum an 'onIntervalClose' function and some or all of the following:
+Indicators will contain an 'onIntervalClose' function and following:
 
 * `onIntervalClose()` Required. Called every bar close. Its job is to return the current indicator value(s) (and any chart config), so is generally where you'll find most of the logic.
 
