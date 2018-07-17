@@ -6,7 +6,7 @@ Technical Indicators
 
 These indicator scripts, written in JavaScript, power the built in technical indicators on the platform.
 
-Their job is to derive a value, or set of values, from price data at any given moment in time to be drawn onto charts as one or several overlays or studies. They can also be used inside your Cloud9Trader trading scripts.
+Indicators derive values from price data at any given moment in time to be drawn onto charts as one or several overlays or studies. They can also be used inside your Cloud9Trader trading scripts.
 
 We've included them in this repository so that you can use them as a reference to help build your own indicators - just create a new indicator on the 'Algorithms' screen and copy the code in.
 
